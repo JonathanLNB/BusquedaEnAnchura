@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <center>
+      <Canvas fx:id="cCanvas" height="400" styleClass="fx" width="600" BorderPane.alignment="CENTER" />
+   </center>
+   <bottom>
+      <Button fx:id="bIniciar" mnemonicParsing="false" text="Iniciar Busqueda" BorderPane.alignment="CENTER" />
+   </bottom>
+</BorderPane>
