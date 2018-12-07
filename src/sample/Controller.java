@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 
 import javax.swing.*;
 import java.net.URL;
@@ -18,10 +19,10 @@ public class Controller implements Initializable {
     Canvas cCanvas;
     @FXML
     Button bIniciar;
-    ArrayList<int [][]> respuestas;
+    ArrayList<int[][]> respuestas;
     Objeto respuesta;
     Simulador juego;
-    int[][] inicio = {
+    /*int[][] mapa = {
             {0,0,0,0,0,0,0,0,0,3},
             {0,3,0,0,0,0,0,0,3,0},
             {0,0,3,0,0,0,0,3,0,0},
@@ -32,13 +33,21 @@ public class Controller implements Initializable {
             {0,0,3,0,0,0,0,3,0,0},
             {0,3,0,0,0,0,0,0,3,0},
             {0,0,0,0,0,0,0,0,0,0}
+    };*/
+    int[][] mapa = {
+            {3, 3, 3, 3, -1},
+            {0, 0, 0, 0, 0},
+            {0, 3, 3, 3, 3},
+            {0, 0, 3, 3, 3},
+            {1, 3, 3, 3, 3}
     };
 
-    //int[][] inicio = {{3, 3, -1}, {3, 0, 3}, {1, 3, 3}};
-    //int[][] inicio = {{3, 3, 3, 0, 0, 0}, {3, -1, 3, 0, 3, 0}, {3, 0, 0, 0, 3, 0}, {3, 3, 3, 3, 0, 0}, {3, 0, 0, 0, 0, 3}, {3, 1, 3, 3, 3, 3}};
-    //int[][] inicio = {{3, 3, 3, 3, 3, 3}, {3, 0, 3, 3, 3, 3}, {3, 0, 3, 3, -1, 0}, {0, 0, 0, 0, 3, 0}, {1, 3, 3, 0, 0, 0}, {3, 3, 3, 3, 3, 3}};
-    int cont;
+    //int[][] mapa = {{3, 3, -1}, {3, 0, 3}, {1, 3, 3}};
+    //int[][] mapa = {{3, 3, 3, 0, 0, 0}, {3, -1, 3, 0, 3, 0}, {3, 0, 0, 0, 3, 0}, {3, 3, 3, 3, 0, 0}, {3, 0, 0, 0, 0, 3}, {3, 1, 3, 3, 3, 3}};
+    //int[][] mapa = {{3, 3, 3, 3, 3, 3}, {3, 0, 3, 3, 3, 3}, {3, 0, 3, 3, -1, 0}, {0, 0, 0, 0, 3, 0}, {1, 3, 3, 0, 0, 0}, {3, 3, 3, 3, 3, 3}};
+    int cont = -1;
     boolean bandera = false;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         respuestas = new ArrayList<>();
@@ -46,21 +55,21 @@ public class Controller implements Initializable {
         Image pasto = new Image("Imagenes/sArbusto.png");
         Image personaje = new Image("Imagenes/abajo.gif");
         Image tumba = new Image("Imagenes/tumba.png");
-        for(int i = 0; i < inicio.length; i++){
-            for(int e = 0; e < inicio.length; e++){
-                cCanvas.getGraphicsContext2D().drawImage(suelo, i*32, e*32);
-                if(inicio[i][e]==3)
-                    cCanvas.getGraphicsContext2D().drawImage(pasto, i*32, e*32);
-                if(inicio[i][e]==1)
-                    cCanvas.getGraphicsContext2D().drawImage(personaje, i*32, e*32);
-                if(inicio[i][e]==-1)
-                    cCanvas.getGraphicsContext2D().drawImage(tumba, i*32, e*32);
+        for (int i = 0; i < mapa.length; i++) {
+            for (int e = 0; e < mapa.length; e++) {
+                cCanvas.getGraphicsContext2D().drawImage(suelo, i * 32, e * 32);
+                if (mapa[i][e] == 3)
+                    cCanvas.getGraphicsContext2D().drawImage(pasto, i * 32, e * 32);
+                if (mapa[i][e] == 1)
+                    cCanvas.getGraphicsContext2D().drawImage(personaje, i * 32, e * 32);
+                if (mapa[i][e] == -1)
+                    cCanvas.getGraphicsContext2D().drawImage(tumba, i * 32, e * 32);
             }
         }
-        bIniciar.setOnAction(new EventHandler<ActionEvent>() {
+        cCanvas.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(ActionEvent event) {
-                if(bandera)
+            public void handle(MouseEvent event) {
+                if (bandera)
                     dibujar();
                 else {
                     iniciar();
@@ -72,26 +81,25 @@ public class Controller implements Initializable {
     }
 
     public void iniciar() {
-        Objeto inicial = new Objeto(inicio);
+        Objeto primero = new Objeto(mapa);
         try {
-            juego = new Simulador(cCanvas, inicio.length);
-            respuesta = juego.resolver(inicial);
+            juego = new Simulador(cCanvas, mapa.length);
+            respuesta = juego.resolver(primero);
             while (respuesta.padre != null) {
-                respuestas.add(respuesta.getEstado());
+                respuestas.add(respuesta.getMatriz());
                 respuesta = respuesta.padre;
             }
-
             cont = respuestas.size();
-        }catch (Exception e){
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Este laberinto no tiene solución \uD83D\uDE30");
         }
     }
-    public void dibujar(){
-        if(cont > 0) {
-            cont --;
+
+    public void dibujar() {
+        if (cont > 0) {
+            cont--;
             juego.imprimeMovimiento(respuestas.get(cont));
-        }
-        else
-            JOptionPane.showMessageDialog(null, "El Foraneo encontro su cerveza ahora es Happy, Happy :3 \uD83D\uDE2D");
+        } else if (cont == 0)
+            JOptionPane.showMessageDialog(null, "El Foráneo encontró su cerveza ahora es Happy, Happy :3 \uD83D\uDE2D");
     }
 }

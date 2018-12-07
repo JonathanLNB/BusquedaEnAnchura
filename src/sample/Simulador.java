@@ -4,7 +4,6 @@ package sample;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -17,104 +16,98 @@ public class Simulador {
         this.cCanvas = cCanvas;
         this.longitud = longitud;
     }
-
     public Objeto resolver(Objeto inicial){
-        Integer contadorM=0;//solo nos ayudara a saber en cuantas iteraciones logro resolverlo
         ArrayList<Objeto> movimientos=new ArrayList<>();
         vistos=new ArrayList<>();
-        ArrayList<Objeto> hijos;
-        Objeto hijo;
-        Objeto revisar;
-        int arriba,abajo,izquierda,derecha;
-        int[][] movPrueba,movUsado;
-        int[] posicionBlanco;
-        movimientos.add(inicial);//añadimos el movimiento inicial pues sera el primero en ser revisado
-        while (movimientos.size()!=0){//recorrera mientras nos queden movimientos por revisar
-            hijos=new ArrayList<>();
-            contadorM++;
-            revisar=movimientos.remove(0);//obtiene el primero de los movimientos que esten disponibles a revisar
-            movPrueba=revisar.getEstado();
-            posicionBlanco=obtenerPosicion(movPrueba);//aprendemos en que lugar esta 1
-            vistos.add(revisar);
-
-            //movimiento arriba
-            if(posicionBlanco[0]!=0){
-                hijo=new Objeto(copiarMatriz(movPrueba));
-                arriba=hijo.getEstado()[posicionBlanco[0]-1][posicionBlanco[1]];//obtenemos el dato que esta arriba del 0
+        ArrayList<Objeto> siguientes;
+        Objeto siguiente;
+        Objeto aux;
+        int arriba;
+        int abajo;
+        int izquierda;
+        int derecha;
+        int[][] auxIntentos, visitado;
+        int[] marioElForaneo;
+        movimientos.add(inicial);
+        while (movimientos.size()!=0){
+            siguientes=new ArrayList<>();
+            aux=movimientos.remove(0);
+            auxIntentos=aux.getMatriz();
+            marioElForaneo=obtenerPosicion(auxIntentos);
+            vistos.add(aux);
+            
+            //Arriba :3
+            if(marioElForaneo[0]!=0){
+                siguiente=new Objeto(generar(auxIntentos));
+                arriba=siguiente.getMatriz()[marioElForaneo[0]-1][marioElForaneo[1]];
                 if(arriba==-1){
-                    return revisar;
+                    return aux;
                 }
                 if(arriba!=3){
-                    //si lo que esta no es una pared entonces:
-                    hijo.getEstado()[posicionBlanco[0]][posicionBlanco[1]]=0;//colocamos el dato en la posicion del 0
-                    hijo.getEstado()[posicionBlanco[0]-1][posicionBlanco[1]]=1;//colocamos el 0 en la posicion donde estaba el dato
-                    movUsado=hijo.getEstado();
-                    if(!visitados(movUsado))//verificamos que ese movimiento no sea un movimiento que ya hayamos usado
-                        movimientos.add(hijo);
-                    hijos.add(hijo);
+                    siguiente.getMatriz()[marioElForaneo[0]][marioElForaneo[1]]=0;
+                    siguiente.getMatriz()[marioElForaneo[0]-1][marioElForaneo[1]]=1;
+                    visitado=siguiente.getMatriz();
+                    if(!usados(visitado))
+                        movimientos.add(siguiente);
+                    siguientes.add(siguiente);
                 }
             }
-            //movimiento abajo
-            if(posicionBlanco[0]!=longitud-1){
-                hijo=new Objeto(copiarMatriz(movPrueba));
-                abajo=hijo.getEstado()[posicionBlanco[0]+1][posicionBlanco[1]];//obtienes el  el dato que existe debajo del 0
+            
+            //Abajo :3
+            if(marioElForaneo[0]!=longitud-1){
+                siguiente=new Objeto(generar(auxIntentos));
+                abajo=siguiente.getMatriz()[marioElForaneo[0]+1][marioElForaneo[1]];
                 if(abajo==-1){
-                    return revisar;
+                    return aux;
                 }
                 if(abajo!=3){
-                    hijo.getEstado()[posicionBlanco[0]][posicionBlanco[1]]=0;//colocas el dato en la posicion del 0
-                    hijo.getEstado()[posicionBlanco[0]+1][posicionBlanco[1]]=1;//colocas el 0 en la posicion del dato
-                    movUsado=hijo.getEstado();//obtenemos la matriz del hio
-                    if(!visitados(movUsado))
-                        movimientos.add(hijo);//si no la hemos usado entonces si lo agregamos a los movimientos posibles
-                    hijos.add(hijo);
+                    siguiente.getMatriz()[marioElForaneo[0]][marioElForaneo[1]]=0;
+                    siguiente.getMatriz()[marioElForaneo[0]+1][marioElForaneo[1]]=1;
+                    visitado=siguiente.getMatriz();
+                    if(!usados(visitado))
+                        movimientos.add(siguiente);
+                    siguientes.add(siguiente);
                 }
             }
-            //movimiento izquierda
-            if(posicionBlanco[1]!=0){
-                hijo=new Objeto(copiarMatriz(movPrueba));
-                izquierda=hijo.getEstado()[posicionBlanco[0]][posicionBlanco[1]-1];//obtienes el dato que existe a la izquierda del 0
+            //Izquierda :3
+            if(marioElForaneo[1]!=0){
+                siguiente=new Objeto(generar(auxIntentos));
+                izquierda=siguiente.getMatriz()[marioElForaneo[0]][marioElForaneo[1]-1];
                 if(izquierda==-1){
-                    return revisar;
+                    return aux;
                 }
                 if(izquierda!=3){
-                    hijo.getEstado()[posicionBlanco[0]][posicionBlanco[1]]=0;//colocas el dato en la posicion del 0
-                    hijo.getEstado()[posicionBlanco[0]][posicionBlanco[1]-1]=1;//colocar el 0 en la posicion del dato anterior
-                    movUsado=hijo.getEstado();
-                    if(!visitados(movUsado))
-                        movimientos.add(hijo);//si no ha sido usado entonces lo agregamos a movimientos posibles
-                    hijos.add(hijo);
+                    siguiente.getMatriz()[marioElForaneo[0]][marioElForaneo[1]]=0;
+                    siguiente.getMatriz()[marioElForaneo[0]][marioElForaneo[1]-1]=1;
+                    visitado=siguiente.getMatriz();
+                    if(!usados(visitado))
+                        movimientos.add(siguiente);
+                    siguientes.add(siguiente);
                 }
             }
-            //movimiento derecha
-            if(posicionBlanco[1]!=longitud-1){
-                hijo=new Objeto(copiarMatriz(movPrueba));
-                derecha=hijo.getEstado()[posicionBlanco[0]][posicionBlanco[1]+1];//obtienes el dato a la derecha del 0
+            
+            //Derecha
+            if(marioElForaneo[1]!=longitud-1){
+                siguiente=new Objeto(generar(auxIntentos));
+                derecha=siguiente.getMatriz()[marioElForaneo[0]][marioElForaneo[1]+1];
                 if(derecha==-1){
-                    return revisar;
+                    return aux;
                 }
                 if(derecha!=3){
-                    hijo.getEstado()[posicionBlanco[0]][posicionBlanco[1]]=0;//colocamos el dato en la posicion donde se encuentra el 0
-                    hijo.getEstado()[posicionBlanco[0]][posicionBlanco[1]+1]=1;//colocamos 0 en la posicon dondeestaba el dato
-                    movUsado=hijo.getEstado();
-                    if(!visitados(movUsado))
-                        movimientos.add(hijo);//si no lo hemos usado entonces lo agregamos a movimientos posibles
-                    hijos.add(hijo);
+                    siguiente.getMatriz()[marioElForaneo[0]][marioElForaneo[1]]=0;
+                    siguiente.getMatriz()[marioElForaneo[0]][marioElForaneo[1]+1]=1;
+                    visitado=siguiente.getMatriz();
+                    if(!usados(visitado))
+                        movimientos.add(siguiente);
+                    siguientes.add(siguiente);
                 }
             }
-            //quiza un if en caso que hijos venga vacio
-            revisar.setHijos(hijos);
+            aux.setHijos(siguientes);
         }
         return null;
     }
-    public boolean solucion(int[][] movimiento,int[][] solucion){
-        if(Arrays.deepEquals(movimiento,solucion))//indica si  las matrices son iguales
-            return true;
-        return false;
-    }
-
     public int[] obtenerPosicion(int[][] estado){
-        int[]posicion=new int[2];// como es una matriz necesitamos guardar i,j por eso el arreglo es de 2 espacios
+        int[]posicion=new int[2];
         int i,j;
         for(i=0;i<estado.length;i++){
             for(j=0;j<estado.length;j++){
@@ -124,11 +117,10 @@ public class Simulador {
                 }
             }
         }
-        return posicion;//lugar donde esta el 0
+        return posicion;
     }
 
-    public int [][] copiarMatriz(int[][] matriz){
-        /*Es necesario generar*/
+    public int [][] generar(int[][] matriz){
         int [][] copia=new int[matriz.length][matriz.length];
         int i,j;
         for(i=0;i<copia.length;i++){
@@ -140,9 +132,9 @@ public class Simulador {
         return copia;
     }
 
-    public boolean visitados(int[][]movimiento){
+    public boolean usados(int[][]movimiento){
         for(Objeto v:vistos){//buscamos el movimiento ya existe en nuestros movimientos vistos
-            if(Arrays.deepEquals(v.getEstado(),movimiento))
+            if(Arrays.deepEquals(v.getMatriz(),movimiento))
                 return true;
         }
         return false;
