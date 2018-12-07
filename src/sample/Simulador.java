@@ -11,9 +11,11 @@ import java.util.Arrays;
 public class Simulador {
     Canvas cCanvas;
     ArrayList<Objeto> vistos;
+    int longitud;
 
-    public Simulador(Canvas cCanvas) {
+    public Simulador(Canvas cCanvas, int longitud) {
         this.cCanvas = cCanvas;
+        this.longitud = longitud;
     }
 
     public Objeto resolver(Objeto inicial){
@@ -53,7 +55,7 @@ public class Simulador {
                 }
             }
             //movimiento abajo
-            if(posicionBlanco[0]!=5){
+            if(posicionBlanco[0]!=longitud-1){
                 hijo=new Objeto(copiarMatriz(movPrueba));
                 abajo=hijo.getEstado()[posicionBlanco[0]+1][posicionBlanco[1]];//obtienes el  el dato que existe debajo del 0
                 if(abajo==-1){
@@ -85,7 +87,7 @@ public class Simulador {
                 }
             }
             //movimiento derecha
-            if(posicionBlanco[1]!=5){
+            if(posicionBlanco[1]!=longitud-1){
                 hijo=new Objeto(copiarMatriz(movPrueba));
                 derecha=hijo.getEstado()[posicionBlanco[0]][posicionBlanco[1]+1];//obtienes el dato a la derecha del 0
                 if(derecha==-1){
@@ -165,6 +167,7 @@ public class Simulador {
         Image suelo = new Image("Imagenes/sSuelo.png");
         Image pasto = new Image("Imagenes/sArbusto.png");
         Image personaje = new Image("Imagenes/abajo.gif");
+        Image tumba = new Image("Imagenes/tumba.png");
         for(int i = mov.size()-1; i >= 0; i--){
             datos = mov.get(i).split(" ");
             for(int e = 0; e < datos.length; e++){
@@ -174,7 +177,8 @@ public class Simulador {
                 if(datos[e].equals("1"))
                     cCanvas.getGraphicsContext2D().drawImage(personaje, i*32, e*32);
                 if(datos[e].equals("-1"))
-                    cCanvas.getGraphicsContext2D().fillOval(i*32, e*32, 32, 32);
+                    cCanvas.getGraphicsContext2D().drawImage(tumba, i*32, e*32);
+
             }
         }
     }

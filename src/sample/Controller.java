@@ -21,7 +21,22 @@ public class Controller implements Initializable {
     ArrayList<int [][]> respuestas;
     Objeto respuesta;
     Simulador juego;
-    int[][] inicio = {{3, 3, 3, 3, 3, 3}, {3, 0, 3, 3, 3, 3}, {3, 0, 3, 3, -1, 0}, {0, 0, 0, 0, 3, 0}, {1, 3, 3, 0, 0, 0}, {3, 3, 3, 3, 3, 3}};
+    int[][] inicio = {
+            {0,0,0,0,0,0,0,0,0,3},
+            {0,3,0,0,0,0,0,0,3,0},
+            {0,0,3,0,0,0,0,3,0,0},
+            {0,0,0,3,0,-1,3,0,0,0},
+            {0,-1,0,0,3,3,1,0,0,0},
+            {0,0,0,0,3,3,0,0,0,0},
+            {0,0,0,3,0,0,3,0,0,0},
+            {0,0,3,0,0,0,0,3,0,0},
+            {0,3,0,0,0,0,0,0,3,0},
+            {0,0,0,0,0,0,0,0,0,0}
+    };
+
+    //int[][] inicio = {{3, 3, -1}, {3, 0, 3}, {1, 3, 3}};
+    //int[][] inicio = {{3, 3, 3, 0, 0, 0}, {3, -1, 3, 0, 3, 0}, {3, 0, 0, 0, 3, 0}, {3, 3, 3, 3, 0, 0}, {3, 0, 0, 0, 0, 3}, {3, 1, 3, 3, 3, 3}};
+    //int[][] inicio = {{3, 3, 3, 3, 3, 3}, {3, 0, 3, 3, 3, 3}, {3, 0, 3, 3, -1, 0}, {0, 0, 0, 0, 3, 0}, {1, 3, 3, 0, 0, 0}, {3, 3, 3, 3, 3, 3}};
     int cont;
     boolean bandera = false;
     @Override
@@ -30,6 +45,7 @@ public class Controller implements Initializable {
         Image suelo = new Image("Imagenes/sSuelo.png");
         Image pasto = new Image("Imagenes/sArbusto.png");
         Image personaje = new Image("Imagenes/abajo.gif");
+        Image tumba = new Image("Imagenes/tumba.png");
         for(int i = 0; i < inicio.length; i++){
             for(int e = 0; e < inicio.length; e++){
                 cCanvas.getGraphicsContext2D().drawImage(suelo, i*32, e*32);
@@ -38,7 +54,7 @@ public class Controller implements Initializable {
                 if(inicio[i][e]==1)
                     cCanvas.getGraphicsContext2D().drawImage(personaje, i*32, e*32);
                 if(inicio[i][e]==-1)
-                    cCanvas.getGraphicsContext2D().fillOval(i*32, e*32, 32, 32);
+                    cCanvas.getGraphicsContext2D().drawImage(tumba, i*32, e*32);
             }
         }
         bIniciar.setOnAction(new EventHandler<ActionEvent>() {
@@ -57,13 +73,18 @@ public class Controller implements Initializable {
 
     public void iniciar() {
         Objeto inicial = new Objeto(inicio);
-        juego = new Simulador(cCanvas);
-        respuesta = juego.resolver(inicial);
-        while(respuesta.padre != null){
-            respuestas.add(respuesta.getEstado());
-            respuesta = respuesta.padre;
+        try {
+            juego = new Simulador(cCanvas, inicio.length);
+            respuesta = juego.resolver(inicial);
+            while (respuesta.padre != null) {
+                respuestas.add(respuesta.getEstado());
+                respuesta = respuesta.padre;
+            }
+
+            cont = respuestas.size();
+        }catch (Exception e){
+            JOptionPane.showMessageDialog(null, "Este laberinto no tiene solución \uD83D\uDE30");
         }
-        cont = respuestas.size();
     }
     public void dibujar(){
         if(cont > 0) {
@@ -71,6 +92,6 @@ public class Controller implements Initializable {
             juego.imprimeMovimiento(respuestas.get(cont));
         }
         else
-            JOptionPane.showMessageDialog(null, "Han acabado las iteracipnes");
+            JOptionPane.showMessageDialog(null, "El Foraneo encontro su cerveza ahora es Happy, Happy :3 \uD83D\uDE2D");
     }
 }
